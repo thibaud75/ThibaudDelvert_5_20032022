@@ -52,11 +52,6 @@ const productid = url.searchParams.get("productid");
 productPage(productid);
 
 const cart = new Cart();
-cart.addToCart({
-  idProduct: "productid",
-  colorProduct: "selectedColors",
-  quantityProduct: "oui",
-});
 
 const addToCart = document
   .querySelector("#addToCart")

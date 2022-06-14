@@ -36,6 +36,14 @@ class Cart {
 
   addToCart(item) {
     const cart = JSON.parse(localStorage.cart);
+    console.log(cart);
+    // vérifier si objet présent dans le tableau ou pas
+    const map = cart.map((item) => item.productid);
+    console.log(map);
+
+    console.log(map.indexOf(item.productid));
+    // si objet présent et > 0 on incrémente la ligne en question
+    // sinon on ajoute l'objet au tab
     cart.push(item);
     localStorage.cart = JSON.stringify(cart);
     console.log({ cart });
