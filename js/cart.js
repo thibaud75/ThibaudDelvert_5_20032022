@@ -37,30 +37,45 @@ class Cart {
     const cart = JSON.parse(localStorage.cart);
     console.log(cart);
     // vérifier si objet présent dans le tableau ou pas
-    const map = cart.map((item) => ({
-      productid: item.productid,
-      color: item.color,
-    }));
-    console.log(map);
 
-    const toto = cart.filter(
-      (cartItem) =>
-        item.productid === cartItem.productid && item.color === cartItem.color
-    );
-    console.log({ toto });
+    // const map = cart.map((item) => ({
+    //   productid: item.productid,
+    //   color: item.color,
+    // }));
+
+    const map = cart.map((item) => item.productid);
+    const map2 = cart.map((item) => item.color);
+    console.log(map);
+    console.log(map2);
+
+    // const toto = cart.filter(
+    //   (cartItem) =>
+    //     item.productid === cartItem.productid && item.color === cartItem.color
+    // );
+    // console.log({ toto });
 
     const index = map.indexOf(item.productid);
-    console.log(map.indexOf(item.productid));
-    if (index === -1) {
+    const index2 = map2.indexOf(item.color);
+    // console.log(map.indexOf(item.productid));
+    // console.log(map.indexOf(item.color));
+    // const index = map.indexOf(toto);
+    console.log(index);
+    console.log(index2);
+    if (index === -1 || index2 === -1) {
       cart.push(item);
-      console.log("Le nouveau tableau est : " + map);
-    } else if (index > -1) {
-      cart[index].quantity = +cart[index].quantity + +item.quantity;
-      console.log(cart[index].quantity);
-      console.log(
-        JSON.stringify(cart[index]) + " existe déjà dans le tableau."
+      console.log("Le nouveau tableau est : "  );
+    } else if (index > -1 && index2 > -1) {
+        cart[i].quantity = +cart[i].quantity + +item.quantity;
+        console.log(cart[i].quantity);
+        console.log(
+        JSON.stringify(cart[i]) + " existe déjà dans le tableau."
       );
+      console.log(cart.length);  
     }
+    // } else if (index2 > -1) {
+    //   cart[index2].quantity = +cart[index2].quantity + +item.quantity;
+    //   console.log(cart[index +1].quantity);
+    // }
 
     // si objet présent et > 0 on incrémente la ligne en question
     // sinon on ajoute l'objet au tab
