@@ -71,7 +71,7 @@ const displayCart = () => {
     console.log(cartDivImg);
 
     let cartImg = document.createElement("img");
-    cartImg.src = parseCart[i].img;
+    cartImg.src = parseCart[i].imageUrl;
     cartImg.alt = parseCart[i].altTxt;
     cartDivImg.appendChild(cartImg);
     console.log(cartImg);
