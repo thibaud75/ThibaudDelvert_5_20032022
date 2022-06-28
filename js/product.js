@@ -51,17 +51,25 @@ const url = new URL(window.location.href);
 const productid = url.searchParams.get("productid");
 productPage(productid);
 
-const cart = new Cart();
-
 const addToCart = document
   .querySelector("#addToCart")
   .addEventListener("click", () => {
     const color = document.querySelector("#colors").value;
     const quantity = document.querySelector("#quantity").value;
+    const desc = document.querySelector("#description").textContent;
+    const price = document.querySelector("#price").textContent;
+    const name = document.querySelector("#title").textContent;
+    const imageUrl = document.querySelector(".item__img img").src;
+    const altTxt = document.querySelector(".item__img img").alt;
     const item = {
       color,
       productid,
       quantity,
+      desc,
+      price,
+      name,
+      imageUrl,
+      altTxt,
     };
     cart.addToCart(item);
   });
