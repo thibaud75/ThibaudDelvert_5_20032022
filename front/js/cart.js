@@ -332,7 +332,7 @@ const cartOrder = () => {
       .then((order) => {
         console.log(order);
         localStorage.setItem("orderId", order.orderId);
-        localStorage.clear();
+        // localStorage.clear();
         window.location.href = "confirmation.html";
       })
       .catch((err) => alert("Il y a un problème: ", err.message));
