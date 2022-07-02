@@ -319,24 +319,69 @@ const cartOrder = () => {
 
   console.log(user);
 
-  const submitForm = document.getElementById("order");
-  document.body.addEventListener("click", (e) => {
-    fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
-      body: JSON.stringify(user),
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((order) => {
-        console.log(order);
-        localStorage.setItem("orderId", order.orderId);
-        // localStorage.clear();
-        window.location.href = "confirmation.html";
+  const test = () => {
+    document.body.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      fetch("https://retoolapi.dev/45aB1g/data", {
+        method: "POST",
+        body: JSON.stringify(user),
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
       })
-      .catch((err) => alert("Il y a un problème: ", err.message));
-  });
+        .then((response) => response.json())
+        .then((data) => {
+          localStorage.setItem("orderId", data.id);
+          console.log(data.id);
+        })
+        .catch((error) => alert("Il y a un problème: ", error.message));
+    });
+  };
+
+  test();
+
+  // const submitForm = document.getElementById("order");
+
+  // document.body.addEventListener("click", (e) => {
+  //   e.preventDefault();
+
+  //   fetch("http://localhost:3000/api/products/order", {
+  //     method: "POST",
+  //     body: JSON.stringify(user),
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json;charset=utf-8",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //     })
+  //     // .then((order) => {
+  //     //   console.log(order);
+  //     //   localStorage.setItem("orderId", order.orderId);
+  //     // localStorage.clear();
+  //     // window.location.href = "confirmation.html";
+  //     // })
+  //     .catch((error) => alert("Il y a un problème: ", error.message));
+  // });
+
+  // async function inserPost() {
+  //   let response = await fetch("http://localhost:3000/api/products/order", {
+  //     method: "POST",
+  //     body: JSON.stringify(user),
+  //     headers: {
+  //       "Content-Type": "application/json;charset=utf-8",
+  //     },
+  //   });
+  //   let responseData = await response.json();
+  //   console.log(responseData);
+  // }
+
+  // document.body.addEventListener("click", (e) => {
+  //   insertPost();
+  // });
 };
 
 cartOrder();
