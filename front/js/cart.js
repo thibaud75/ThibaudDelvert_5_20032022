@@ -319,8 +319,9 @@ const cartOrder = () => {
 
   console.log(user);
 
+  const submitForm = document.getElementById("order");
   const test = () => {
-    document.body.addEventListener("click", (e) => {
+    submitForm.addEventListener("click", (e) => {
       e.preventDefault();
 
       fetch("https://retoolapi.dev/45aB1g/data", {
@@ -333,7 +334,9 @@ const cartOrder = () => {
         .then((response) => response.json())
         .then((data) => {
           localStorage.setItem("orderId", data.id);
+          console.log(data);
           console.log(data.id);
+          window.location.href = "confirmation.html";
         })
         .catch((error) => alert("Il y a un problème: ", error.message));
     });
