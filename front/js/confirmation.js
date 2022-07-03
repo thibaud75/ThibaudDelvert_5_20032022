@@ -1,4 +1,7 @@
+const url = new URL(window.location.href);
+
 const getId = document.querySelector("#orderId");
-const getOrderId = JSON.parse(localStorage.getItem("orderId"));
-console.log(getOrderId);
-getId.innerHTML = getOrderId;
+const urlId = url.searchParams.get("id");
+
+console.log(urlId);
+getId.innerHTML = urlId;

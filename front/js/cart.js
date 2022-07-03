@@ -294,97 +294,59 @@ const cartOrder = () => {
       }
     });
   });
-  const url = new URL(window.location.href);
-
-  const firstName = url.searchParams.get("firstName");
-  const lastName = url.searchParams.get("lastName");
-  const address = url.searchParams.get("address");
-  const city = url.searchParams.get("city");
-  const email = url.searchParams.get("email");
-
-  const product = [];
-  for (let i = 0; i < parseCart.length; i++) {
-    product.push(parseCart[i].productid);
-  }
-  console.log(product);
-
-  const user = {
-    firstName,
-    lastName,
-    address,
-    city,
-    email,
-    product,
-  };
-
-  console.log(user);
-
-  const submitForm = document.getElementById("order");
-  const test = () => {
-    submitForm.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      fetch("https://retoolapi.dev/45aB1g/data", {
-        method: "POST",
-        body: JSON.stringify(user),
-        headers: {
-          "Content-Type": "application/json;charset=utf-8",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          localStorage.setItem("orderId", data.id);
-          console.log(data);
-          console.log(data.id);
-          window.location.href = "confirmation.html";
-        })
-        .catch((error) => alert("Il y a un problème: ", error.message));
-    });
-  };
-
-  test();
-
-  // const submitForm = document.getElementById("order");
-
-  // document.body.addEventListener("click", (e) => {
-  //   e.preventDefault();
-
-  //   fetch("http://localhost:3000/api/products/order", {
-  //     method: "POST",
-  //     body: JSON.stringify(user),
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json;charset=utf-8",
-  //     },
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //     })
-  //     // .then((order) => {
-  //     //   console.log(order);
-  //     //   localStorage.setItem("orderId", order.orderId);
-  //     // localStorage.clear();
-  //     // window.location.href = "confirmation.html";
-  //     // })
-  //     .catch((error) => alert("Il y a un problème: ", error.message));
-  // });
-
-  // async function inserPost() {
-  //   let response = await fetch("http://localhost:3000/api/products/order", {
-  //     method: "POST",
-  //     body: JSON.stringify(user),
-  //     headers: {
-  //       "Content-Type": "application/json;charset=utf-8",
-  //     },
-  //   });
-  //   let responseData = await response.json();
-  //   console.log(responseData);
-  // }
-
-  // document.body.addEventListener("click", (e) => {
-  //   insertPost();
-  // });
 };
 
 cartOrder();
+
+const submitForm = document.getElementById("order");
+const cartForm = () => {
+  document.body.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const product = [];
+    for (let i = 0; i < parseCart.length; i++) {
+      product.push(parseCart[i].productid);
+    }
+    console.log(product);
+
+    const firstName = document.querySelector("#firstName").value;
+    const lastName = document.querySelector("#lastName").value;
+    const address = document.querySelector("#address").value;
+    const city = document.querySelector("#city").value;
+    const email = document.querySelector("#email").value;
+    console.log(firstName);
+    console.log(lastName);
+    console.log(address);
+    console.log(city);
+    console.log(email);
+
+    const user = {
+      firstName,
+      lastName,
+      address,
+      city,
+      email,
+      product,
+    };
+
+    console.log(user);
+
+    fetch("https://retoolapi.dev/45aB1g/data", {
+      method: "POST",
+      body: JSON.stringify(user),
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        console.log(data.id);
+        // localStorage.clear();
+        // window.location.href = `confirmation.html?id=${data.id}`;
+      })
+      .catch((error) => alert("Il y a un problème: ", error.message));
+  });
+};
+
+cartForm();
