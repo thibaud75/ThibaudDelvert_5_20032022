@@ -148,9 +148,9 @@ const modifyProduct = () => {
       parseCart[i].quantity = input[i].value;
       localStorage.setItem("cart", JSON.stringify(parseCart));
       console.log(parseCart);
-      console.log("yo");
+      // console.log("yo");
 
-      location.reload();
+      // location.reload();
     });
   }
 };
@@ -332,7 +332,7 @@ const cartForm = () => {
 
     console.log(user);
 
-    fetch("https://kanap-oc.herokuapp.com/api/order", {
+    fetch("https://kanap-oc.herokuapp.com/api/products/order", {
       method: "POST",
       body: JSON.stringify(user),
       headers: {
@@ -342,9 +342,9 @@ const cartForm = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        console.log(data.id);
+        console.log(data.orderId);
         // localStorage.clear();
-        // window.location.href = `confirmation.html?id=${data.id}`;
+        // window.location.href = `confirmation.html?id=${data.orderId}`;
       })
       .catch((error) => alert("Il y a un problème: ", error.message));
   });

@@ -41,9 +41,6 @@ const productPage = (productid) => {
 const url = new URL(window.location.href);
 const productid = url.searchParams.get("productid");
 productPage(productid);
-// const arrayColor = [document.querySelector("#colors").value];
-// const color = arrayColor.filter((value) => value > 0);
-// console.log(color);
 
 const addToCart = document
   .querySelector("#addToCart")
