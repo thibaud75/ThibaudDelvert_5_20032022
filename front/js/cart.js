@@ -1,8 +1,10 @@
+// Création d'une classe Cart qui va permettre à notre page product.js de communiquer avec cart.js
 class Cart {
   constructor() {
     this.initCart();
   }
 
+  // Fonction qui initialise le panier dans le localstorage
   initCart() {
     const localStorageCart = JSON.parse(localStorage.getItem("cart"));
     if (!localStorageCart) {
@@ -15,6 +17,10 @@ class Cart {
     }
   }
 
+  // Fonction qui récupère un ojet "item" de product.js
+  // Si le produit n'existe pas il est ajouté au localstorage
+  // Si il existe déjà il n'est pas rajouté inutilement mais la quantité
+  // est incrementé au produit correspondant dans le localstorage
   addToCart(item) {
     const cart = JSON.parse(localStorage.cart);
     console.log(cart);
@@ -28,17 +34,21 @@ class Cart {
     console.log(foundProduct);
     // Foundproduct renvoie undefined si la combinaison de item.color et item.productid
     // ne sont pas présent dans cart, sinon un objet avec la combinaison de item.color et item.productid
-
+    if (item.color === "") {
+      console.log("pas de choix de couleur");
+    } else if (item.quantity === 0) {
+      console.log("quantité est 0");
+    }
     // Si foundProduct est undefined ça veut dire que la combinaison de item.color et item.productid
     // n'existe pas dans cart donc on va push l'item dans cart
-    if (!foundProduct) {
+    else if (!foundProduct) {
       cart.push(item);
     } else {
       // Si foundProduct ne renvoie pas undefined ça veut dire que la combinaison de item.color
       // et de item.productid est déjà présent donc on va l'incrémenter grâce à foundProduct qui
       // va nous renvoyer un objet avec la combinaison des deux éléments à laqulle on va ajouter
       // la quantité qu'on souhaite en lui passant item.quantity
-      foundProduct.quantity = +foundProduct.quantity + +item.quantity;
+      foundProduct.quantity = foundProduct.quantity + item.quantity;
       console.log(foundProduct.quantity);
       console.log(typeof foundProduct);
       console.log(foundProduct);
@@ -48,15 +58,20 @@ class Cart {
   }
 }
 
+// Déclaration de la classe cart
 const cart = new Cart();
 
+// Récupération du localstorage
+// puis on le parse pour pouvoir l'exploiter
 const getArrayCart = localStorage.getItem("cart");
 const parseCart = JSON.parse(getArrayCart);
 console.log(parseCart);
 console.log(parseCart.length);
 
+// Affichage des canapés du panier de l'utilisateur
 const displayCart = () => {
   for (let i = 0; i < parseCart.length; i++) {
+    // On parcourt le localstorage et on affiche les produits un par un
     let cartArticle = document.createElement("article");
     document.querySelector("#cart__items").appendChild(cartArticle);
     cartArticle.className = "cart__item";
@@ -138,34 +153,47 @@ const displayCart = () => {
 
 displayCart();
 
+// Fonction qui permet de modifier la quantité de canapé voulu directement sur la page panier
 const modifyProduct = () => {
-  let input = document.querySelectorAll(".itemQuantity");
-  console.log(typeof input);
-  console.log(input);
+  let inputQuantity = document.querySelectorAll(".itemQuantity");
+  console.log(typeof inputQuantity);
+  console.log(inputQuantity);
 
-  for (let i = 0; i < input.length; i++) {
-    input[i].addEventListener("change", function () {
-      parseCart[i].quantity = input[i].value;
+  // La méthode QuerySelectorAll retourne des objets NodeList
+  // sur lesquels on peut itérer
+  for (let i = 0; i < inputQuantity.length; i++) {
+    // Lorsque le nombre de l'input choisit change
+    // On attribue à la quantité de l'objet JSON parseCart
+    // une nouvelle valeur égale à celle changée
+    inputQuantity[i].addEventListener("change", function () {
+      parseCart[i].quantity = inputQuantity[i].value;
+      // On actualise la valeur dans le localstorage
       localStorage.setItem("cart", JSON.stringify(parseCart));
       console.log(parseCart);
       // console.log("yo");
 
-      // location.reload();
+      location.reload();
     });
   }
 };
 
 modifyProduct();
 
+// Fonction qui va supprimer un produit du DOM et du localstorage
 const deleteProduct = () => {
   let selectDelete = document.querySelectorAll(".deleteItem");
   console.log(typeof selectDelete);
   console.log(selectDelete);
 
+  // Comme la fonction modifier, la méthode querySelectorALl
+  // retourne un objet Nodelist qu'on va itérer
   for (let i = 0; i < selectDelete.length; i++) {
+    // On ajoute un event click sur les balises "supprimer"
     selectDelete[i].addEventListener("click", (e) => {
       e.preventDefault();
 
+      // On va supprimer du DOM avec remove l'article ".cart__item"
+      // parent le plus proche (en remontant) du paragraphe grâce à closest
       const el = selectDelete[i].closest(".cart__item").remove;
 
       let productidDelete = parseCart[i].productid;
@@ -189,6 +217,8 @@ const deleteProduct = () => {
 
 deleteProduct();
 
+// Fonction affichant la quantité d'article dans le panier de l'utilisateur ainsi que le prix total
+// sur la page panier
 const displayCartPrice = () => {
   let totalQuantity = 0;
   let totalPrice = 0;
@@ -209,6 +239,8 @@ const displayCartPrice = () => {
 
 displayCartPrice();
 
+// Fonction permettant de checker si les informations rentrées par l'utilisateur
+// sont valides
 const inputChecker = () => {
   const inputs = document.querySelectorAll(
     "input[type=text], input[type=email]"
@@ -297,8 +329,10 @@ const inputChecker = () => {
 
 inputChecker();
 
-const submitForm = document.getElementById("order");
+// Fonction qui va effectuer une requête POST à l'API fetch
+// lorsque l'utilisateur va cliquer sur le bouton "Commander"
 const cartForm = () => {
+  const submitForm = document.getElementById("order");
   submitForm.addEventListener("click", (e) => {
     e.preventDefault();
 
@@ -319,6 +353,8 @@ const cartForm = () => {
     console.log(city);
     console.log(email);
 
+    // Création d'un objet avec une clé contact contenant le résultat du formulaire
+    // et une clé products qui est un tableau de productid
     const user = {
       contact: {
         firstName,
@@ -332,6 +368,7 @@ const cartForm = () => {
 
     console.log(user);
 
+    // Requête POST à l'API fetch on envoie l'objet user
     fetch("https://kanap-oc.herokuapp.com/api/products/order", {
       method: "POST",
       body: JSON.stringify(user),
@@ -340,10 +377,10 @@ const cartForm = () => {
       },
     })
       .then((response) => response.json())
+      // On récupère orderId qui correspond au numéro de commande
       .then((data) => {
         console.log(data);
         console.log(data.orderId);
-        // localStorage.clear();
         // window.location.href = `confirmation.html?id=${data.orderId}`;
       })
       .catch((error) => alert("Il y a un problème: ", error.message));
