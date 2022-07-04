@@ -18,11 +18,13 @@ const createCanap = (canap) => {
   canapPrice.innerHTML = canap.price + " €";
   canapArticle.appendChild(canapPrice);
 };
+
 const createCanaps = (canaps) => {
   for (const canap of canaps) {
     createCanap(canap);
   }
 };
+
 const createHomepage = () => {
   fetch("https://kanap-oc.herokuapp.com/api/products").then(function (
     response

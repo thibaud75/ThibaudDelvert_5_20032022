@@ -20,15 +20,6 @@ const createColorsSelectOptions = (colors) => {
   });
 };
 
-// const selectedColors = () => {
-//   document.querySelector("#colors").addEventListener("change", function () {
-//     let colors = this.value;
-//     console.log(colors);
-//   });
-// };
-
-// selectedColors();
-
 const productPage = (productid) => {
   fetch(`https://kanap-oc.herokuapp.com/api/products/${productid}`).then(
     function (response) {
@@ -50,6 +41,9 @@ const productPage = (productid) => {
 const url = new URL(window.location.href);
 const productid = url.searchParams.get("productid");
 productPage(productid);
+// const arrayColor = [document.querySelector("#colors").value];
+// const color = arrayColor.filter((value) => value > 0);
+// console.log(color);
 
 const addToCart = document
   .querySelector("#addToCart")

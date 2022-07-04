@@ -13,7 +13,6 @@ class Cart {
     } else if (localStorageCart && localStorageCart.length > 0) {
       console.log("panier déja existant");
     }
-    // console.log(localStorageCart.length);
   }
 
   addToCart(item) {
@@ -166,8 +165,8 @@ const deleteProduct = () => {
   for (let i = 0; i < selectDelete.length; i++) {
     selectDelete[i].addEventListener("click", (e) => {
       e.preventDefault();
-      const el = selectDelete[i].closest(".cart__item");
-      const removeEl = el.remove();
+
+      const el = selectDelete[i].closest(".cart__item").remove;
 
       let productidDelete = parseCart[i].productid;
       let colorDelete = parseCart[i].color;
@@ -210,7 +209,7 @@ const displayCartPrice = () => {
 
 displayCartPrice();
 
-const cartOrder = () => {
+const inputChecker = () => {
   const inputs = document.querySelectorAll(
     "input[type=text], input[type=email]"
   );
@@ -296,18 +295,18 @@ const cartOrder = () => {
   });
 };
 
-cartOrder();
+inputChecker();
 
 const submitForm = document.getElementById("order");
 const cartForm = () => {
-  document.body.addEventListener("click", (e) => {
+  submitForm.addEventListener("click", (e) => {
     e.preventDefault();
 
-    const product = [];
+    const products = [];
     for (let i = 0; i < parseCart.length; i++) {
-      product.push(parseCart[i].productid);
+      products.push(parseCart[i].productid);
     }
-    console.log(product);
+    console.log(products);
 
     const firstName = document.querySelector("#firstName").value;
     const lastName = document.querySelector("#lastName").value;
@@ -321,17 +320,19 @@ const cartForm = () => {
     console.log(email);
 
     const user = {
-      firstName,
-      lastName,
-      address,
-      city,
-      email,
-      product,
+      contact: {
+        firstName,
+        lastName,
+        address,
+        city,
+        email,
+      },
+      products,
     };
 
     console.log(user);
 
-    fetch("https://retoolapi.dev/45aB1g/data", {
+    fetch("https://kanap-oc.herokuapp.com/api/order", {
       method: "POST",
       body: JSON.stringify(user),
       headers: {
