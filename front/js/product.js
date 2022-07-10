@@ -4,21 +4,13 @@ const productid = url.searchParams.get("productid");
 
 // Requête GET avec l'API fetch pour récupérer les informations du canapé de la page Produit
 const productPage = (productid) => {
-  fetch(`https://kanap-oc.herokuapp.com/api/products/${productid}`).then(
-    function (response) {
-      var contentType = response.headers.get("content-type");
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        return response.json().then(function (json) {
-          console.log(json);
-          // On récupère l'ensemble des informations du canapé et on les passe à une fonction en format JSON pour la création du DOM
-          createProduct(json);
-          // traitement du JSON
-        });
-      } else {
-        console.log("Oops, nous n'avons pas du JSON!");
-      }
-    }
-  );
+  fetch(`https://kanap-oc.herokuapp.com/api/products/${productid}`)
+    .then((response) => response.json())
+    .then((json) => {
+      // On récupère l'ensemble des informations du canapé et on les passe à une fonction en format JSON pour la création du DOM
+      createProduct(json);
+    })
+    .catch((error) => alert("Il y a un problème: ", error.message));
 };
 
 // On éxécute la fonction avec en paramètre productid qui a récupéré l'id du canapé grâce à l'URL
@@ -86,5 +78,51 @@ const addToCart = document
 
     // On passe en paramètre l'objet "item" à la fonction addToCart contenu dans la classe cart de la page Panier
     // Ainsi au clique de l'utilisateur, la fonction est executée avec l'objet "item" en paremètre = toutes les caractéristiques du canapé choisit
-    cart.addToCart(item);
+    addToLocalStorage(item);
   });
+
+// Fonction qui initialise le panier dans le localstorage
+const initCart = () => {
+  const localStorageCart = JSON.parse(localStorage.getItem("cart"));
+  // Si le panier est vide alors on l'initialise
+  if (!localStorageCart) {
+    const arrayCart = [];
+    const cart = JSON.stringify(arrayCart);
+    localStorage.setItem("cart", cart);
+  }
+};
+
+initCart();
+
+// Fonction qui récupère un ojet "item" de product.js
+// Si le produit n'existe pas il est ajouté au localstorage
+// Si il existe déjà il n'est pas rajouté inutilement mais la quantité
+// est incrementé au produit correspondant dans le localstorage
+const addToLocalStorage = (item) => {
+  const cart = JSON.parse(localStorage.cart);
+
+  // Création d'une variable foundProduct à laquelle on passe la methode find au tableau cart
+  let foundProduct = cart.find(
+    (p) => p.color === item.color && p.productid === item.productid
+  );
+  if (item.color === "") {
+    alert("Veuillez choisir une couleur !");
+  } else if (item.quantity === 0) {
+    alert("Veuillez choisir le nombre de canapés que vous souhaitez!");
+  }
+  // Foundproduct renvoie undefined si la combinaison de item.color et item.productid
+  // ne sont pas présent dans cart, sinon un objet avec la combinaison de item.color et item.productid
+  // Si foundProduct est undefined ça veut dire que la combinaison de item.color et item.productid
+  // n'existe pas dans cart donc on va push l'item dans cart
+  else if (!foundProduct) {
+    cart.push(item);
+  } else {
+    // Si foundProduct ne renvoie pas undefined ça veut dire que la combinaison de item.color
+    // et de item.productid est déjà présent donc on va l'incrémenter grâce à foundProduct qui
+    // va nous renvoyer un objet avec la combinaison des deux éléments à laqulle on va ajouter
+    // la quantité qu'on souhaite en lui passant item.quantity
+    foundProduct.quantity = foundProduct.quantity + item.quantity;
+  }
+
+  localStorage.cart = JSON.stringify(cart);
+};
