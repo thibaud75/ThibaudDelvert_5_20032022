@@ -18,80 +18,6 @@ const emptyCart = () => {
 
 emptyCart();
 
-// Affichage des canapés du panier de l'utilisateur
-const displayCart = () => {
-  for (let i = 0; i < parseCart.length; i++) {
-    // On parcourt le localstorage et on affiche les produits un par un
-    let cartArticle = document.createElement("article");
-    document.querySelector("#cart__items").appendChild(cartArticle);
-    cartArticle.className = "cart__item";
-    cartArticle.setAttribute("data-id", parseCart[i].productid);
-    cartArticle.setAttribute("data-color", parseCart[i].color);
-
-    let cartDivImg = document.createElement("div");
-    cartDivImg.className = "cart__item__img";
-    cartArticle.appendChild(cartDivImg);
-
-    let cartImg = document.createElement("img");
-    cartImg.src = parseCart[i].imageUrl;
-    cartImg.alt = parseCart[i].altTxt;
-    cartDivImg.appendChild(cartImg);
-
-    let cartDivMain = document.createElement("div");
-    cartDivMain.className = "cart__item__content";
-    cartArticle.appendChild(cartDivMain);
-
-    let cartDivMainDesc = document.createElement("div");
-    cartDivMainDesc.className = "cart__item__content__description";
-    cartDivMain.appendChild(cartDivMainDesc);
-
-    let cartDivMainDescTitle = document.createElement("h2");
-    cartDivMainDesc.appendChild(cartDivMainDescTitle);
-    cartDivMainDescTitle.innerHTML = parseCart[i].name;
-
-    let cartDivMainDescColor = document.createElement("p");
-    cartDivMainDesc.appendChild(cartDivMainDescColor);
-    cartDivMainDescColor.innerHTML = parseCart[i].color;
-
-    let cartDivMainDescPrice = document.createElement("p");
-    cartDivMainDesc.appendChild(cartDivMainDescPrice);
-    cartDivMainDescPrice.innerHTML = parseCart[i].price + " €";
-
-    let cartDivMainDesc2 = document.createElement("div");
-    cartDivMainDesc2.className = "cart__item__content__settings";
-    cartDivMain.appendChild(cartDivMainDesc2);
-
-    let cartDivMainDesc2Qt = document.createElement("div");
-    cartDivMainDesc2Qt.className = "cart__item__content__settings__quantity";
-    cartDivMainDesc2.appendChild(cartDivMainDesc2Qt);
-
-    let cartDivMainDesc2QtP = document.createElement("p");
-    cartDivMainDesc2Qt.appendChild(cartDivMainDesc2QtP);
-    cartDivMainDesc2QtP.innerHTML = "Qté :";
-
-    let cartDivMainDesc2Input = document.createElement("input");
-    cartDivMainDesc2Qt.appendChild(cartDivMainDesc2Input);
-    cartDivMainDesc2Input.value = parseCart[i].quantity;
-    cartDivMainDesc2Input.className = "itemQuantity";
-    cartDivMainDesc2Input.setAttribute("type", "number");
-    cartDivMainDesc2Input.setAttribute("min", "1");
-    cartDivMainDesc2Input.setAttribute("max", "100");
-    cartDivMainDesc2Input.setAttribute("name", "itemQuantity");
-
-    let cartDivMainDelete = document.createElement("div");
-    cartDivMainDesc2.appendChild(cartDivMainDelete);
-    cartDivMainDelete.className = "cart__item__content__settings__delete";
-
-    let cartDivMainDeleteP = document.createElement("p");
-    cartDivMainDeleteP.className = "deleteItem";
-    cartDivMainDelete.appendChild(cartDivMainDeleteP);
-    cartDivMainDeleteP.innerHTML = "Supprimer";
-  }
-};
-
-displayCart();
-
-// Fonction qui permet de modifier la quantité de canapé voulu directement sur la page panier
 const modifyProduct = () => {
   let inputQuantity = document.querySelectorAll(".itemQuantity");
 
@@ -102,16 +28,18 @@ const modifyProduct = () => {
     // On attribue à la quantité de l'objet JSON parseCart
     // une nouvelle valeur égale à celle changée
     inputQuantity[i].addEventListener("change", function () {
-      parseCart[i].quantity = inputQuantity[i].value;
-      // On actualise la valeur dans le localstorage
-      localStorage.setItem("cart", JSON.stringify(parseCart));
+      if (inputQuantity[i].value > 0 && inputQuantity[i].value < 101) {
+        parseCart[i].quantity = inputQuantity[i].value;
+        localStorage.setItem("cart", JSON.stringify(parseCart));
+        console.log(inputQuantity[i].value);
 
-      location.reload();
+        location.reload();
+      } else {
+        alert("Veuillez choisir entre 1 et 100 canapé!");
+      }
     });
   }
 };
-
-modifyProduct();
 
 // Fonction qui va supprimer un produit du DOM et du localstorage
 const deleteProduct = () => {
@@ -126,11 +54,13 @@ const deleteProduct = () => {
 
       // On va supprimer du DOM avec remove l'article ".cart__item"
       // parent le plus proche (en remontant) du paragraphe grâce à closest
-      const el = selectDelete[i].closest(".cart__item").remove;
+      selectDelete[i].closest(".cart__item").remove;
 
       let productidDelete = parseCart[i].productid;
       let colorDelete = parseCart[i].color;
 
+      // deleteCart renvoie parseCart avec les éléments qui ont passé le test
+      // donc il va renvoyer un tableau avec tous les éléments SAUF celui qu'on a cliqué
       const deleteCart = parseCart.filter(
         (el) => el.productid !== productidDelete || el.color !== colorDelete
       );
@@ -143,34 +73,107 @@ const deleteProduct = () => {
   }
 };
 
-deleteProduct();
-
-// Fonction affichant la quantité d'article dans le panier de l'utilisateur ainsi que le prix total
-// sur la page panier
-const displayCartPrice = () => {
+const getPrice = async () => {
   let totalQuantity = 0;
   let totalPrice = 0;
   for (let i = 0; i < parseCart.length; i++) {
-    let totalQuantityDom = document.querySelector("#totalQuantity");
-    totalQuantity = +totalQuantity + +parseCart[i].quantity;
-    totalQuantityDom.innerHTML = totalQuantity;
+    const parseCartId = parseCart[i].productid;
+    await fetch(`https://kanap-oc.herokuapp.com/api/products/${parseCartId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        parseCart[i].price = data.price;
+        let cartArticle = document.createElement("article");
+        document.querySelector("#cart__items").appendChild(cartArticle);
+        cartArticle.className = "cart__item";
+        cartArticle.setAttribute("data-id", parseCart[i].productid);
+        cartArticle.setAttribute("data-color", parseCart[i].color);
+
+        let cartDivImg = document.createElement("div");
+        cartDivImg.className = "cart__item__img";
+        cartArticle.appendChild(cartDivImg);
+
+        let cartImg = document.createElement("img");
+        cartImg.src = parseCart[i].imageUrl;
+        cartImg.alt = parseCart[i].altTxt;
+        cartDivImg.appendChild(cartImg);
+
+        let cartDivMain = document.createElement("div");
+        cartDivMain.className = "cart__item__content";
+        cartArticle.appendChild(cartDivMain);
+
+        let cartDivMainDesc = document.createElement("div");
+        cartDivMainDesc.className = "cart__item__content__description";
+        cartDivMain.appendChild(cartDivMainDesc);
+
+        let cartDivMainDescTitle = document.createElement("h2");
+        cartDivMainDesc.appendChild(cartDivMainDescTitle);
+        cartDivMainDescTitle.innerHTML = parseCart[i].name;
+
+        let cartDivMainDescColor = document.createElement("p");
+        cartDivMainDesc.appendChild(cartDivMainDescColor);
+        cartDivMainDescColor.innerHTML = parseCart[i].color;
+
+        let cartDivMainDescPrice = document.createElement("p");
+        cartDivMainDesc.appendChild(cartDivMainDescPrice);
+        cartDivMainDescPrice.innerHTML = parseCart[i].price + " €";
+
+        let cartDivMainDesc2 = document.createElement("div");
+        cartDivMainDesc2.className = "cart__item__content__settings";
+        cartDivMain.appendChild(cartDivMainDesc2);
+
+        let cartDivMainDesc2Qt = document.createElement("div");
+        cartDivMainDesc2Qt.className =
+          "cart__item__content__settings__quantity";
+        cartDivMainDesc2.appendChild(cartDivMainDesc2Qt);
+
+        let cartDivMainDesc2QtP = document.createElement("p");
+        cartDivMainDesc2Qt.appendChild(cartDivMainDesc2QtP);
+        cartDivMainDesc2QtP.innerHTML = "Qté :";
+
+        let cartDivMainDesc2Input = document.createElement("input");
+        cartDivMainDesc2Qt.appendChild(cartDivMainDesc2Input);
+        cartDivMainDesc2Input.value = parseCart[i].quantity;
+        cartDivMainDesc2Input.className = "itemQuantity";
+        cartDivMainDesc2Input.setAttribute("type", "number");
+        cartDivMainDesc2Input.setAttribute("min", "1");
+        cartDivMainDesc2Input.setAttribute("max", "100");
+        cartDivMainDesc2Input.setAttribute("name", "itemQuantity");
+
+        let cartDivMainDelete = document.createElement("div");
+        cartDivMainDesc2.appendChild(cartDivMainDelete);
+        cartDivMainDelete.className = "cart__item__content__settings__delete";
+
+        let cartDivMainDeleteP = document.createElement("p");
+        cartDivMainDeleteP.className = "deleteItem";
+        cartDivMainDelete.appendChild(cartDivMainDeleteP);
+        cartDivMainDeleteP.innerHTML = "Supprimer";
+
+        let totalQuantityDom = document.querySelector("#totalQuantity");
+        totalQuantity = +totalQuantity + +parseCart[i].quantity;
+        totalQuantityDom.innerHTML = totalQuantity;
+
+        let totalPriceDom = document.querySelector("#totalPrice");
+        totalPrice = +totalPrice + +parseCart[i].price * +parseCart[i].quantity;
+        totalPriceDom.innerHTML = totalPrice;
+      });
   }
-  for (let i = 0; i < parseCart.length; i++) {
-    let totalPriceDom = document.querySelector("#totalPrice");
-    totalPrice = +totalPrice + +parseCart[i].price * +parseCart[i].quantity;
-    totalPriceDom.innerHTML = totalPrice;
-  }
+  modifyProduct();
+  deleteProduct();
 };
 
-displayCartPrice();
+getPrice();
 
+// On selectionne tous les inputs
 const inputs = document.querySelectorAll("input[type=text], input[type=email]");
 
+// Regex pour check les informations rentrées par l'utilisateur dans le formulaire
 let nameCheck = new RegExp(/^[a-zéèçà]{2,50}(-|)?([a-zéèçà]{2,50})?$/gim);
 let cityCheck = new RegExp(/^[a-zéèçà]{2,50}(-| )?([a-zéèçà]{2,50})?$/gim);
 let addressCheck = new RegExp(/^[a-zA-Z0-9\s,.'-]{3,}$/);
 let emailCheck = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
 
+// Une fonction pour chaque input, si la saisie de l'utilisateur
+// correspond à la regex, le booleon renvoie true sinon false
 const firstNameChecker = (value) => {
   let valueBoolean = false;
   if (!value.match(nameCheck)) {
@@ -236,6 +239,7 @@ const emailChecker = (value) => {
   return valueBoolean;
 };
 
+// target.id correspond à ce que rentre l'utilisateur dans le formulaire
 inputs.forEach((input) => {
   input.addEventListener("input", (e) => {
     switch (e.target.id) {
@@ -278,8 +282,10 @@ const cartForm = () => {
     }
 
     for (let i = 0; i < parseCart.length; i++) {
-      if (+parseCart[i].quantity === 0) {
-        alert("La quantité d'un canapé ne peux être égale à 0 !");
+      if (+parseCart[i].quantity < 1 || +parseCart[i].quantity > 100) {
+        alert(
+          "La quantité de canapé d'un même modèle doit être comprise entre 0 et 100"
+        );
         return 0;
       }
     }
@@ -290,27 +296,14 @@ const cartForm = () => {
     const city = document.querySelector("#city").value;
     const email = document.querySelector("#email").value;
 
-    if (firstNameChecker(firstName) === false) {
-      alert("Veuillez remplir correctement le formulaire !");
-      return 0;
-    }
-
-    if (lastNameChecker(lastName) === false) {
-      alert("Veuillez remplir correctement le formulaire !");
-      return 0;
-    }
-
-    if (addressChecker(address) === false) {
-      alert("Veuillez remplir correctement le formulaire !");
-      return 0;
-    }
-
-    if (cityChecker(city) === false) {
-      alert("Veuillez remplir correctement le formulaire !");
-      return 0;
-    }
-
-    if (emailChecker(email) === false) {
+    // Si une fonction renvoie false on return 0 pour ne pas éxecuter le reste de la fonction (notamment le POST)
+    if (
+      !firstNameChecker(firstName) ||
+      !lastNameChecker(lastName) ||
+      !addressChecker(address) ||
+      !cityChecker(city) ||
+      !emailChecker(email)
+    ) {
       alert("Veuillez remplir correctement le formulaire !");
       return 0;
     }

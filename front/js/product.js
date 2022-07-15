@@ -49,38 +49,6 @@ const createColorsSelectOptions = (colors) => {
   });
 };
 
-// Création de la fonction qui va permettre à l'utilisateur de passer les caractéristiques du canapé ,
-// la quantité choisit ainsi que la couleur au panier
-const addToCart = document
-  // On cible le bouton "Ajouter au panier"
-  .querySelector("#addToCart")
-  //On ajouter l'event click au bouton
-  .addEventListener("click", () => {
-    // On récupère les valeur de la couleur et de la quantité ainsi que le reste des informations sur le canapé
-    const color = document.querySelector("#colors").value;
-    const quantity = parseInt(document.querySelector("#quantity").value);
-    const desc = document.querySelector("#description").textContent;
-    const price = parseInt(document.querySelector("#price").textContent);
-    const name = document.querySelector("#title").textContent;
-    const imageUrl = document.querySelector(".item__img img").src;
-    const altTxt = document.querySelector(".item__img img").alt;
-    // Création d'un objet "item" qui contient toutes les caractéristiques du canapé
-    const item = {
-      color,
-      productid,
-      quantity,
-      desc,
-      price,
-      name,
-      imageUrl,
-      altTxt,
-    };
-
-    // On passe en paramètre l'objet "item" à la fonction addToCart contenu dans la classe cart de la page Panier
-    // Ainsi au clique de l'utilisateur, la fonction est executée avec l'objet "item" en paremètre = toutes les caractéristiques du canapé choisit
-    addToLocalStorage(item);
-  });
-
 // Fonction qui initialise le panier dans le localstorage
 const initCart = () => {
   const localStorageCart = JSON.parse(localStorage.getItem("cart"));
@@ -93,6 +61,38 @@ const initCart = () => {
 };
 
 initCart();
+
+// Création de la fonction qui va permettre à l'utilisateur de passer les caractéristiques du canapé ,
+// la quantité choisit ainsi que la couleur au panier
+const addToCart = document
+  // On cible le bouton "Ajouter au panier"
+  .querySelector("#addToCart")
+  //On ajouter l'event click au bouton
+  .addEventListener("click", () => {
+    // On récupère les valeur de la couleur et de la quantité ainsi que le reste des informations sur le canapé
+    const color = document.querySelector("#colors").value;
+    const quantity = parseInt(document.querySelector("#quantity").value);
+    const desc = document.querySelector("#description").textContent;
+    // const price = parseInt(document.querySelector("#price").textContent);
+    const name = document.querySelector("#title").textContent;
+    const imageUrl = document.querySelector(".item__img img").src;
+    const altTxt = document.querySelector(".item__img img").alt;
+    // Création d'un objet "item" qui contient toutes les caractéristiques du canapé
+    const item = {
+      color,
+      productid,
+      quantity,
+      desc,
+      // price,
+      name,
+      imageUrl,
+      altTxt,
+    };
+
+    // On passe en paramètre l'objet "item" à la fonction addToCart contenu dans la classe cart de la page Panier
+    // Ainsi au clique de l'utilisateur, la fonction est executée avec l'objet "item" en paremètre = toutes les caractéristiques du canapé choisit
+    addToLocalStorage(item);
+  });
 
 // Fonction qui récupère un ojet "item" de product.js
 // Si le produit n'existe pas il est ajouté au localstorage
@@ -107,8 +107,8 @@ const addToLocalStorage = (item) => {
   );
   if (item.color === "") {
     alert("Veuillez choisir une couleur !");
-  } else if (item.quantity === 0) {
-    alert("Veuillez choisir le nombre de canapés que vous souhaitez!");
+  } else if (item.quantity < 1 || item.quantity > 100) {
+    alert("Veuillez choisir un nombre de canapé entre 1 et 100!");
   }
   // Foundproduct renvoie undefined si la combinaison de item.color et item.productid
   // ne sont pas présent dans cart, sinon un objet avec la combinaison de item.color et item.productid
@@ -116,6 +116,8 @@ const addToLocalStorage = (item) => {
   // n'existe pas dans cart donc on va push l'item dans cart
   else if (!foundProduct) {
     cart.push(item);
+  } else if (foundProduct.quantity > 99) {
+    alert("Vous ne pouvez pas ajouter plus de 100 canapés au panier!");
   } else {
     // Si foundProduct ne renvoie pas undefined ça veut dire que la combinaison de item.color
     // et de item.productid est déjà présent donc on va l'incrémenter grâce à foundProduct qui
