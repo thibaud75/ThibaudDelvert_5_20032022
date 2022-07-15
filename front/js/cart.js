@@ -73,6 +73,8 @@ const deleteProduct = () => {
   }
 };
 
+// test
+
 const getPrice = async () => {
   let totalQuantity = 0;
   let totalPrice = 0;
